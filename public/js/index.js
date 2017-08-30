@@ -45,6 +45,6 @@ locationButton.on('click', function() {
       longitude: position.coords.longitude
     })
   }, function() {
-    return alert('Unable to fetch location!')
+     alert('Unable to fetch location!')
   })
 })
