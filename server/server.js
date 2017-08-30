@@ -28,8 +28,9 @@ io.on('connection', (socket) => {
   // message from one user to all users
   socket.on('createMessage', (message, cb) => {
     console.log('created message server looks', message)
+    // listener for create msg
     io.emit('newMessage', generateMessage(message.from, message.text))
-    cb( {props: 1, string: 'this is from server'} )
+    cb()
   })
   // event lister create location msg
   socket.on('createLocationMessage', (coords) => {
