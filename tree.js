@@ -1,9 +1,14 @@
 .
 ├── package.json
 ├── public
-│   └── index.html
+│   ├── index.html
+│   └── js
+│       └── index.js
 ├── server
-│   └── server.js
+│   ├── server.js
+│   └── utils
+│       ├── message.js
+│       └── message.test.js
 └── tree.js
 
-2 directories, 4 files
+4 directories, 7 files
