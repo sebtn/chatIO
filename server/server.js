@@ -7,4 +7,4 @@ const port = process.env.PORT || 3000
 
 app.use(express.static(publicPath)) // serve static HTML
 app.listen(port)
-console.log('Express is now in charge of port: ' + port)
+console.log(`Express is now in charge of port: ${port}`)
