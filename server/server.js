@@ -13,8 +13,22 @@ const io = socketIO(server)
 app.use(express.static(publicPath)) 
 
 // persistent connection open
-io.on('connection', (socket) =>  {
+io.on('connection', (socket) => {
   console.log('new user connected and logged from server')
+
+  // new user can see this
+  socket.emit('newMessage', {
+    from: 'Admin',
+    text: 'Welcome to the chat app',
+    createdAt: new Date().getTime()
+  })
+
+  // all but new user can see this
+  socket.broadcast.emit('newMessage', { //type: newMessage
+      from: 'Admin',
+      text: 'New User joined',
+      createdAt: new Date().getTime()
+  })
 
   // message from one user to all users
   socket.on('createMessage', (message) => {
@@ -24,6 +38,15 @@ io.on('connection', (socket) =>  {
       text: message.text,
       createdAt: new Date().getTime()
     })
+    
+    // not all connections get the same, 
+    // all but me get it, cause I broadcast it
+    // socket.broadcast.emit('newMessage', {
+    //     from: message.from,
+    //     text: message.text,
+    //     createdAt: new Date().getTime()
+    // })    
+
   })
 
   socket.on('newMessage', (newMessage) => {
