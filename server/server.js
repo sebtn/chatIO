@@ -4,6 +4,7 @@ const express = require('express')
 const socketIO = require('socket.io')
 
 const {generateMessage} = require('./utils/message')
+
 const port = process.env.PORT || 3000
 const publicPath = path.join(__dirname, '../public') 
 const app = express()
@@ -24,20 +25,12 @@ io.on('connection', (socket) => {
   socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined'))
 
   // message from one user to all users
-  socket.on('createMessage', (message) => {
+  socket.on('createMessage', (message, cb) => {
     console.log('created message server looks', message)
     io.emit('newMessage', generateMessage(message.from, message.text))
+    cb({props: 1, string: 'this is from server'})
   })
     
-    // not all connections get the same, 
-    // all but me get it, cause I broadcast it
-    // socket.broadcast.emit('newMessage', {
-    //     from: message.from,
-    //     text: message.text,
-    //     createdAt: new Date().getTime()
-    // })    
-
-
   socket.on('newMessage', (newMessage) => {
     console.log('from client logged into server', newMessage)
   })
