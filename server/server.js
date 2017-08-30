@@ -16,14 +16,14 @@ app.use(express.static(publicPath))
 io.on('connection', (socket) =>  {
   console.log('new user connected and logged from server')
 
-  socket.on('createMessage', (newMessage) => {
-    console.log('created message server looks', newMessage)
-  })
-
-  socket.emit('newMessage', {
-    from: "Ex.vom Message",
-    text: 'Halo title',
-    created_at: 123
+  // message from one user to all users
+  socket.on('createMessage', (message) => {
+    console.log('created message server looks', message)
+    io.emit('newMessage', {
+      from: message.from,
+      text: message.text,
+      createdAt: new Date().getTime()
+    })
   })
 
   socket.on('newMessage', (newMessage) => {
