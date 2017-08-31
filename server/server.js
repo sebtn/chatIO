@@ -16,21 +16,44 @@ const io = socketIO(server)
 // serve static HTML
 app.use(express.static(publicPath)) 
 
+/*
+  Server emit events:
+=================================================================
+  io.emit 
+    -> emits to every connected user (connections in socket??)
+=================================================================
+  socket.broadcast.emit 
+    -> emits to everyone connected to the socket but current user
+=================================================================
+  socket.emit -> emit event to one user
+------------------------------------------------------------------
+  Specific room use '.to'
+=================================================================
+  io.emit -> io.to('room').emit
+    -> Everybody connected to the room
+=================================================================
+  socket.broadcast.to('room').emit
+    ->Everybody in room except current user calling socket.broadcast
+ */
+
+
 // persistent connection open
 io.on('connection', (socket) => {
   console.log('new user connected and logged from server')
 
-  // new user can see this
-  socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat'))
-
-  // all but new user can see this
-  socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined'))
-
-  // here is on the chat.js has emit
+  // note 'on' used here since the chat.js has emit
   socket.on('join', (params, cb) => {
     if(!isString(params.name) || !isString(params.room)) {
       cb('Name and room required')
     }
+    // emit to peps in room
+    socket.join(params.room) 
+    // target specific user
+    socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat'))
+    // emit to a all users in room but broadcaster
+    socket.broadcast.to(params.room).emit('newMessage', 
+        generateMessage('Admin', `${params.name} has joined`))
+    
     cb()
   })
 
