@@ -51,9 +51,7 @@ io.on('connection', (socket) => {
     // target specific user
     socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat'))
     // emit to a all users in room but broadcaster
-    socket.broadcast.to(params.room).emit('newMessage', 
-        generateMessage('Admin', `${params.name} has joined`))
-    
+    socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', `${params.name} has joined`))
     cb()
   })
 

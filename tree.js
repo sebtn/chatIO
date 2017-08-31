@@ -1,19 +1,24 @@
 .
 ├── package.json
 ├── public
+│   ├── chat.html
 │   ├── css
 │   │   └── styles.css
 │   ├── index.html
 │   └── js
-│       ├── index.js
+│       ├── chat.js
 │       └── libs
+│           ├── deparam.js
 │           ├── jquery-3.2.1.min.js
-│           └── moment.js
+│           ├── moment.js
+│           └── mustache.js
 ├── server
 │   ├── server.js
 │   └── utils
 │       ├── message.js
-│       └── message.test.js
+│       ├── message.test.js
+│       ├── validation.js
+│       └── validation.test.js
 └── tree.js
 
-6 directories, 10 files
+6 directories, 15 files
