@@ -9,18 +9,21 @@ socket.on('disconnect', function() {
 })
 
 /*-----------------------------------------------------*/
-socket.on('newMessage', function(newMessage) {
+//value passed into moment
+socket.on('newMessage', function (message) {
+  var formattedTime = moment(message.createdAt).format('h:mm a')
   var li = jQuery('<li></li>')
-  li.text(`${newMessage.from}: ${newMessage.text}`)
+  li.text(`${message.from} ${formattedTime}: ${message.text}`)
   jQuery('#messages-list').append(li)
 })
 
 /*-----------------------------------------------------*/
 // generate dom
 socket.on('newLocationMessage', function(message) { 
+  var formattedTime = moment(message.createdAt).format('h:mm a')
   var li = jQuery('<li></li>')
   var a = jQuery('<a target="_blank">Current location</a>')
-  li.text(`${message.from}: `)
+  li.text(`${message.from} ${formattedTime}: `)
   a.attr('href', message.url)
   li.append(a)
   jQuery('#messages-list').append(li)
@@ -31,7 +34,7 @@ var messageTextBox = jQuery('[name=message]')
 jQuery('#message-form').on('submit', function(e) {
   e.preventDefault()
   socket.emit('createMessage', {
-    from: 'user',
+    from: 'User',
     text: messageTextBox.val()
   }, function() { //cb is acknowledgment
     messageTextBox.val('')
