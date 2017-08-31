@@ -1,5 +1,22 @@
 var socket = io()
 
+function scrollToBottom () {
+  // selector
+  var messages = jQuery('#messages-list')
+  var newMessage = messages.children('li:last-child')
+  // heights
+  var clientHeight = messages.prop('clientHeight')
+  var scrollTop = messages.prop('scrollTop')
+  var scrollHeight = messages.prop('scrollHeight')
+  var newMessageHeight = newMessage.innerHeight()
+  var lastMessageHeight = newMessage.prev().innerHeight()
+
+  var sum = clientHeight + scrollTop + lastMessageHeight +newMessageHeight
+  if(sum >= scrollHeight)  messages.scrollTop(scrollHeight)  
+  
+}
+
+/*-----------------------------------------------------*/
 socket.on('connect', function() {
   console.log('connected to server from HTML script')
 })
@@ -20,6 +37,7 @@ socket.on('newMessage', function (message) {
     createdAt: formattedTime
   })
   jQuery('#messages-list').append(html)
+  scrollToBottom()
 })
 
 /*-----------------------------------------------------*/
@@ -33,11 +51,12 @@ socket.on('newLocationMessage', function(message) {
     createdAt: formattedTime
   })
   jQuery('#messages-list').append(html)
+  scrollToBottom()
 })
 
 /*-----------------------------------------------------*/
-var messageTextBox = jQuery('[name=message]')
 jQuery('#message-form').on('submit', function(e) {
+  var messageTextBox = jQuery('[name=message]')
   e.preventDefault()
   socket.emit('createMessage', {
     from: 'User',
