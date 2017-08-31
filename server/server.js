@@ -3,6 +3,7 @@ const http = require('http')
 const express = require('express')
 const socketIO = require('socket.io')
 
+const {isString} = require('./utils/validation')
 const {generateMessage,
   generateLocationMessage} = require('./utils/message')
 
@@ -24,6 +25,14 @@ io.on('connection', (socket) => {
 
   // all but new user can see this
   socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined'))
+
+  // here is on the chat.js has emit
+  socket.on('join', (params, cb) => {
+    if(!isString(params.name) || !isString(params.room)) {
+      cb('Name and room required')
+    }
+    cb()
+  })
 
   // message from one user to all users
   socket.on('createMessage', (message, cb) => {
