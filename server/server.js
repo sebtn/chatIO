@@ -37,10 +37,13 @@ app.use(express.static(publicPath))
  */
 
 
+
+/*-----------------------------------------------------*/
 // persistent connection open
 io.on('connection', (socket) => {
   console.log('new user connected and logged from server')
 
+/*-----------------------------------------------------*/
   // note 'on' used here since the chat.js has emit
   socket.on('join', (params, cb) => {
     if(!isString(params.name) || !isString(params.room)) {
@@ -54,7 +57,8 @@ io.on('connection', (socket) => {
     socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', `${params.name} has joined`))
     cb()
   })
-
+  
+/*-----------------------------------------------------*/
   // message from one user to all users
   socket.on('createMessage', (message, cb) => {
     console.log('created message server looks', message)
@@ -67,12 +71,15 @@ io.on('connection', (socket) => {
     io.emit('newLocationMessage', generateLocationMessage('Admin', `${coords.latitude}`, `${coords.longitude}`))
   })
 
+/*-----------------------------------------------------*/
+// persistent connection closed
   socket.on('disconnect', () =>  {
     console.log('disconnected client and logged from server')
   })
 
 })
 
+/*-----------------------------------------------------*/
 server.listen(port, () =>  {
   console.log(`Express is now in charge of port: ${port}`)
 })
