@@ -25,18 +25,17 @@ app.use(express.static(publicPath))
   socket.broadcast.emit 
     -> emits to everyone connected to the socket but current user
 =================================================================
-  socket.emit -> emit event to one user
+  socket.emit -> emit specifically event to one user
 ------------------------------------------------------------------
   Specific room use '.to'
 =================================================================
   io.emit -> io.to('room').emit
-    -> Everybody connected to the room
+    -> Ever person connected to the room
 =================================================================
   socket.broadcast.to('room').emit
-    ->Everybody in room except current user calling socket.broadcast
+    -> Everybody in room except current user 
+      calling socket.broadcast
  */
-
-
 
 /*-----------------------------------------------------*/
 // persistent connection open
@@ -49,12 +48,13 @@ io.on('connection', (socket) => {
     if(!isString(params.name) || !isString(params.room)) {
       cb('Name and room required')
     }
-    // emit to peps in room
+    // emit to peps in same room
     socket.join(params.room) 
     // target specific user
     socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat'))
     // emit to a all users in room but broadcaster
-    socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', `${params.name} has joined`))
+    socket.broadcast.to(params.room)
+      .emit('newMessage', generateMessage('Admin', `${params.name} has joined`))
     cb()
   })
   
