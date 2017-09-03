@@ -4,6 +4,7 @@ const express = require('express')
 const socketIO = require('socket.io')
 
 const {isString} = require('./utils/validation')
+const {Users} = require('./utils/users')
 const {generateMessage,
   generateLocationMessage} = require('./utils/message')
 
@@ -13,6 +14,7 @@ const app = express()
 const server = http.createServer(app)
 // server - client
 const io = socketIO(server) 
+const users = new Users()
 // serve static HTML
 app.use(express.static(publicPath)) 
 
@@ -46,10 +48,14 @@ io.on('connection', (socket) => {
   // note 'on' used here since the chat.js has emit
   socket.on('join', (params, cb) => {
     if(!isString(params.name) || !isString(params.room)) {
-      cb('Name and room required')
+      return cb('Name and room required')
     }
-    // emit to peps in same room
-    socket.join(params.room) 
+    // emit to peps in same room using user class
+    socket.join(params.room)
+    users.removeUser(socket.id)
+    users.addUser(socket.id, params.name, params.room)
+    io.to(params.room).emit('updateUserList', users.getUserList(params.room))
+
     // target specific user
     socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat'))
     // emit to a all users in room but broadcaster
@@ -68,18 +74,28 @@ io.on('connection', (socket) => {
   })
   // event lister create location msg
   socket.on('createLocationMessage', (coords) => {
-    io.emit('newLocationMessage', generateLocationMessage('Admin', `${coords.latitude}`, `${coords.longitude}`))
+    io.emit('newLocationMessage', generateLocationMessage('Admin', 
+      `${coords.latitude}`, `${coords.longitude}`))
   })
 
 /*-----------------------------------------------------*/
 // persistent connection closed
   socket.on('disconnect', () =>  {
+    var user = users.removeUser(socket.id)
+    if(user) {
+      io.to(user.room).emit('updateUserList', users.getUserList(user.room)) //update list
+      io.to(user.room).emit('newMessage', generateMessage('Admin', 
+        `${user.name} has left`) ) // print msg
+    }
     console.log('disconnected client and logged from server')
   })
-
 })
 
 /*-----------------------------------------------------*/
+/*
+  Make nodemon run:
+    -> ./node_modules/.bin/nodemon server/server.js
+*/
 server.listen(port, () =>  {
   console.log(`Express is now in charge of port: ${port}`)
 })

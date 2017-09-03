@@ -38,35 +38,25 @@ describe('Users', () => {
   })  
 
   it('Should remove a user', () => {
-    let removed = users.removeUser('3')
-    expect(removed).toEqual([{
-      id: '1',
-      name: 'Sebas',
-      room: 'Noder room'
-    }, {
-      id: '2',
-      name: 'Lil',
-      room: 'React room'
-    }])
+    let userId = '3'
+    let user = users.removeUser(userId)
+    expect(user.id).toBe(userId)
+    expect(users.users.length).toBe(2)
   }) 
 
   it('Should NOT remove a user', () => {
     let removed = users.removeUser('5')
-    expect(removed).toEqual(users.users)
+    expect(removed).toNotExist()
   })  
 
   it('Should get user', () => {
-    let selected = users.getUser('2')
-    expect(selected).toEqual([{
-      id: '2',
-      name: 'Lil',
-      room: 'React room'
-    }])
+    var userId = '2'
+    let user = users.getUser(userId)
+    expect(user.id).toBe(userId)
   })  
 
   it('Should NOT get user', () => {
     let selected = users.getUser('4')
-    expect(selected).toEqual([])
-  })
-
+    expect(selected).toNotExist()
+  })  
 })
