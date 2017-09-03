@@ -54,8 +54,8 @@ io.on('connection', (socket) => {
     socket.join(params.room)
     users.removeUser(socket.id)
     users.addUser(socket.id, params.name, params.room)
-    io.to(params.room).emit('updateUserList', users.getUserList(params.room))
 
+    io.to(params.room).emit('updateUserList', users.getUserList(params.room))
     // target specific user
     socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat'))
     // emit to a all users in room but broadcaster
@@ -67,15 +67,22 @@ io.on('connection', (socket) => {
 /*-----------------------------------------------------*/
   // message from one user to all users
   socket.on('createMessage', (message, cb) => {
-    console.log('created message server looks', message)
-    // listener for create msg
-    io.emit('newMessage', generateMessage(message.from, message.text))
+    const user = users.getUser(socket.id)
+    // listener for create msg private to room 
+    if(user && isString(message.text)) {
+      io.to(user.room).emit('newMessage', 
+        generateMessage(user.name, message.text))
+    }
     cb()
   })
-  // event lister create location msg
+  // event lister create location 
   socket.on('createLocationMessage', (coords) => {
-    io.emit('newLocationMessage', generateLocationMessage('Admin', 
-      `${coords.latitude}`, `${coords.longitude}`))
+    const user = users.getUser(socket.id)
+    // listener for create msg private to room 
+    if(user) {
+      io.to(user.room).emit('newLocationMessage', 
+        generateLocationMessage(user.name, `${coords.latitude}`, `${coords.longitude}`))
+    }
   })
 
 /*-----------------------------------------------------*/
@@ -83,7 +90,8 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () =>  {
     var user = users.removeUser(socket.id)
     if(user) {
-      io.to(user.room).emit('updateUserList', users.getUserList(user.room)) //update list
+      //update list
+      io.to(user.room).emit('updateUserList', users.getUserList(user.room)) 
       io.to(user.room).emit('newMessage', generateMessage('Admin', 
         `${user.name} has left`) ) // print msg
     }
