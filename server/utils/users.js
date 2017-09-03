@@ -8,7 +8,6 @@ class Users {
     return user
   }
   removeUser(id) {
-    // return user that was removed
     return this.users.filter((u) => u.id !== id )
   }
   getUser(id) {
@@ -23,7 +22,4 @@ class Users {
 } 
 
 module.exports = { Users }
-// adduser(id, name, room)
-// removeuser(id) socket.id
-// gewtUser(id) return users
-// getuserlist(room) retun [names]
+// re-factor: change class for a factory
